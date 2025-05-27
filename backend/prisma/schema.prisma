@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Karigar {
+  id          String       @id @default(uuid())
+  name        String
+  email       String       @unique
+  skills      String[]
+  status      String
+  assignments Assignment[]
+  orders      Order[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Assignment {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  tasks       Json     // e.g. [{ name, completed }]
+  materials   Json     // e.g. [{ name, quantity }]
+  status      String
+  karigar     Karigar? @relation(fields: [karigarId], references: [id])
+  karigarId   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Order {
+  id          String   @id @default(uuid())
+  customer    String
+  items       Json     // e.g. [{ name, quantity }]
+  stages      Json     // e.g. [{ name, done }]
+  status      String
+  karigar     Karigar? @relation(fields: [karigarId], references: [id])
+  karigarId   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
